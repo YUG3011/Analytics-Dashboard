@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CausalFunnel — Demo Website</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #030712;
+      --surface: rgba(13, 17, 23, 0.9);
+      --border: rgba(255,255,255,0.07);
+      --text: #f8fafc;
+      --muted: #64748b;
+      --purple: #a855f7;
+      --cyan: #22d3ee;
+      --emerald: #10b981;
+      --rose: #f43f5e;
+      --amber: #f59e0b;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      position: relative;
+    }
+
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      border-radius: 999px;
+      filter: blur(18px);
+      opacity: 0.55;
+    }
+
+    body::before {
+      width: 220px;
+      height: 220px;
+      left: -70px;
+      top: 110px;
+      background: rgba(168,85,247,0.15);
+    }
+
+    body::after {
+      width: 280px;
+      height: 280px;
+      right: -100px;
+      top: 240px;
+      background: rgba(34,211,238,0.12);
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(168,85,247,0.4); border-radius: 10px; }
+
+    /* ── Header ── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(3, 7, 18, 0.88);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      z-index: 20;
+    }
+
+    .instruction-banner {
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      z-index: 19;
+      background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(34,211,238,0.08));
+      border-bottom: 1px solid rgba(168,85,247,0.2);
+      padding: 0.75rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #c4b5fd;
+      backdrop-filter: blur(12px);
+      letter-spacing: -0.01em;
+      animation: slideDown 0.4s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .instruction-banner::before {
+      content: '✨';
+      margin-right: 10px;
+      font-size: 0.9rem;
+    }
+
+    main {
+      margin-top: 44px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .logo-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #a855f7, #22d3ee);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      box-shadow: 0 0 20px rgba(168,85,247,0.4);
+    }
+    .logo-text {
+      background: linear-gradient(135deg, #fff 0%, #d8b4fe 60%, #22d3ee 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    nav { display: flex; gap: 4px; }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+    nav a:hover { color: #94a3b8; background: rgba(255,255,255,0.04); }
+    nav a.active {
+      color: #d8b4fe;
+      background: rgba(168,85,247,0.1);
+      border-color: rgba(168,85,247,0.2);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dashboard-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0.6rem 0.9rem;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(34,211,238,0.08));
+      border: 1px solid rgba(168,85,247,0.25);
+      color: #d8b4fe;
+      text-decoration: none;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      transition: all 0.2s ease;
+    }
+
+    .dashboard-link:hover {
+      background: linear-gradient(135deg, rgba(168,85,247,0.22), rgba(34,211,238,0.15));
+      border-color: rgba(168,85,247,0.35);
+    }
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      background: rgba(16,185,129,0.08);
+      border: 1px solid rgba(16,185,129,0.2);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #6ee7b7;
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 6px rgba(16,185,129,0.8);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    /* ── Main ── */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 3.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 5rem 2rem;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      background: radial-gradient(ellipse at 50% 0%, rgba(168,85,247,0.12) 0%, transparent 60%);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-layout {
+      text-align: left;
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(290px, 0.75fr);
+      gap: 2rem;
+      align-items: stretch;
+      padding: 2rem;
+    }
+    .hero-layout .hero-copy {
+      padding: 2rem;
+      align-self: center;
+    }
+    .hero-layout .hero-buttons {
+      justify-content: flex-start;
+    }
+    .hero-layout .hero-visual {
+      border-radius: 28px;
+      border: 1px solid rgba(168,85,247,0.16);
+      background:
+        radial-gradient(circle at top left, rgba(168,85,247,0.28), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(34,211,238,0.16), transparent 35%),
+        rgba(8, 12, 21, 0.86);
+      padding: 1.25rem;
+      display: grid;
+      gap: 1rem;
+      align-content: center;
+    }
+    .hero-layout .hero-visual-card {
+      border-radius: 20px;
+      padding: 1.1rem 1.15rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .hero-layout .hero-visual-card strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 0.35rem;
+    }
+    .hero-layout .hero-visual-card span {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 120%, rgba(34,211,238,0.06) 0%, transparent 60%);
+    }
+    .hero-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 14px;
+      border-radius: 999px;
+      background: rgba(168,85,247,0.12);
+      border: 1px solid rgba(168,85,247,0.25);
+      color: #d8b4fe;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #ffffff 0%, #d8b4fe 50%, #22d3ee 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+    .hero p {
+      font-size: 1.125rem;
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.875rem 2rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border-radius: 14px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      font-family: 'Outfit', sans-serif;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+      color: white;
+      box-shadow: 0 4px 20px rgba(168,85,247,0.4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(168,85,247,0.5);
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: #94a3b8;
+    }
+    .btn-secondary:hover {
+      background: rgba(168,85,247,0.08);
+      border-color: rgba(168,85,247,0.2);
+      color: #d8b4fe;
+    }
+    .hero-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── Section headings ── */
+    .section-label {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 999px;
+      background: rgba(168,85,247,0.1);
+      border: 1px solid rgba(168,85,247,0.2);
+      color: #d8b4fe;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .section-sub {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.75rem;
+      line-height: 1.6;
+    }
+
+    /* ── Product cards ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1.25rem;
+    }
+    .cards-grid.products-grid {
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    }
+    .cards-grid.pricing-grid-layout {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+    .card {
+      background: rgba(13,17,23,0.85);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: all 0.25s;
+      cursor: pointer;
+    }
+    .card:hover {
+      border-color: rgba(168,85,247,0.25);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px -8px rgba(0,0,0,0.6), 0 0 0 1px rgba(168,85,247,0.08);
+    }
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .card p {
+      color: var(--muted);
+      font-size: 0.875rem;
+      line-height: 1.65;
+    }
+    .card-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .product-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 280px;
+      justify-content: space-between;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(13,17,23,0.95) 0%, rgba(30, 20, 50, 0.85) 100%);
+      transition: all 0.3s ease;
+    }
+
+    .product-card:hover {
+      border-color: rgba(168,85,247,0.35);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px -10px rgba(168,85,247,0.2);
+    }
+
+    .product-card::after {
+      content: '';
+      position: absolute;
+      inset: auto -50px -50px auto;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(168,85,247,0.25), transparent 68%);
+      pointer-events: none;
+    }
+
+    .product-kicker {
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #a78bfa;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, rgba(168,85,247,0.25), rgba(34,211,238,0.15));
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      width: fit-content;
+      border: 1px solid rgba(168,85,247,0.3);
+    }
+
+    .product-metric {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-top: auto;
+      font-weight: 800;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(168,85,247,0.1);
+    }
+
+    .product-metric strong {
+      font-size: 2.2rem;
+      letter-spacing: -0.04em;
+      background: linear-gradient(135deg, #a855f7, #22d3ee);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .product-metric span {
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .pricing-card .price-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .pricing-card .plan-name {
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .about-panel {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+    }
+
+    .story-card {
+      background: rgba(13,17,23,0.85);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      min-height: 180px;
+    }
+
+    .story-card h3 {
+      font-size: 1.05rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .story-card p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+
+    /* ── Pricing ── */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+    .pricing-card {
+      background: rgba(13,17,23,0.85);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      transition: all 0.25s;
+    }
+    .pricing-card.featured {
+      background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(34,211,238,0.05));
+      border-color: rgba(168,85,247,0.3);
+      box-shadow: 0 0 40px -12px rgba(168,85,247,0.3);
+    }
+    .pricing-card:hover {
+      transform: translateY(-3px);
+    }
+    .price-amount {
+      font-size: 2.5rem;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .price-period { font-size: 0.875rem; color: var(--muted); font-weight: 500; }
+    .price-feature {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.875rem;
+      color: #94a3b8;
+    }
+    .price-check { color: var(--emerald); font-weight: 700; }
+
+    /* ── Session info / tracker console ── */
+    .tracker-panel {
+      background: rgba(13,17,23,0.9);
+      border: 1px solid rgba(168,85,247,0.15);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .tracker-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      background: rgba(168,85,247,0.05);
+    }
+    .tracker-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: #d8b4fe;
+    }
+    .console-box {
+      background: #040609;
+      padding: 1.25rem 1.5rem;
+      font-family: 'IBM Plex Mono', 'Courier New', monospace;
+      font-size: 0.8rem;
+      max-height: 220px;
+      overflow-y: auto;
+      color: #6ee7b7;
+      line-height: 1.8;
+    }
+    .console-box::-webkit-scrollbar { width: 3px; }
+    .console-box::-webkit-scrollbar-thumb { background: rgba(168,85,247,0.4); }
+
+    .session-id-display {
+      padding: 1.25rem 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+    .session-id-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; }
+    .session-id-value {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.8rem;
+      color: #a78bfa;
+      word-break: break-all;
+      background: rgba(168,85,247,0.08);
+      border: 1px solid rgba(168,85,247,0.15);
+      padding: 8px 12px;
+      border-radius: 10px;
+    }
+
+    /* ── Click ripple ── */
+    .click-ripple {
+      position: fixed;
+      pointer-events: none;
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      animation: rippleOut 0.6s ease-out forwards;
+      z-index: 9999;
+    }
+    @keyframes rippleOut {
+      0%   { transform: translate(-50%,-50%) scale(0); opacity: 1; }
+      100% { transform: translate(-50%,-50%) scale(2.5); opacity: 0; }
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.875rem;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      main { padding: 1.75rem 1rem 4rem; gap: 2.5rem; }
+      nav a { padding: 0.4rem 0.6rem; font-size: 0.8rem; }
+      .hero { padding: 3rem 1.25rem; }
+
+      .hero-layout { grid-template-columns: 1fr; }
+      .hero-layout .hero-copy { padding: 0; }
+      .hero-layout .hero-visual { order: -1; }
+      .about-panel { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <div class="logo-mark">⚡</div>
+      <span class="logo-text">CausalFunnel Demo</span>
+    </div>
+    <nav id="main-nav">
+      <a href="?page=home"     id="nav-home">Home</a>
+      <a href="?page=products" id="nav-products">Products</a>
+    </nav>
+    <div class="header-right">
+      <a class="dashboard-link" href="http://localhost:3000" target="_blank" rel="noreferrer">Dashboard</a>
+      <div class="status-badge">
+        <div class="status-dot"></div>
+        Tracking Active
+      </div>
+    </div>
+  </header>
+
+  <div class="instruction-banner">
+    Click anywhere to see updates in your dashboard
+  </div>
+
+  <main>
+
+    <!-- ── HERO ── -->
+    <section class="hero" id="hero-section">
+      <div class="hero-chip" id="hero-chip">⚡ Tracker Embedded</div>
+      <div class="hero-layout" id="hero-layout">
+        <div class="hero-copy">
+          <h1 id="page-title">Analytics That Understand<br>Your Users</h1>
+          <p id="page-desc">
+            This demo website has the CausalFunnel tracker embedded. Every page view and click you make is sent to the analytics backend in real time.
+          </p>
+          <div class="hero-buttons">
+            <button class="btn btn-primary" id="cta-btn">Generate Events →</button>
+            <button class="btn btn-secondary" id="random-btn">Simulate 10 Clicks</button>
+          </div>
+        </div>
+        <div class="hero-visual" id="hero-visual">
+          <div class="hero-visual-card">
+            <strong>Live session capture</strong>
+            <span>Every page view, click, and route change is recorded by the embedded tracker.</span>
+          </div>
+          <div class="hero-visual-card">
+            <strong>Dashboard-ready events</strong>
+            <span>Use the fixed Dashboard button to jump straight into the analytics app while testing this page.</span>
+          </div>
+          <div class="hero-visual-card">
+            <strong>Distinct page layouts</strong>
+            <span>Home is centered and polished, while Products uses a split showcase layout for a different feel.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PRODUCT CARDS ── -->
+    <section>
+      <div class="section-label" id="section-label">Features</div>
+      <h2 id="section-title">Everything You Need to Track</h2>
+      <p class="section-sub" id="section-sub">Click any card below to generate click events that appear in the heatmap and session timeline.</p>
+      <div class="cards-grid" id="content-grid">
+        <div class="card" id="card-sessions">
+          <div class="card-icon" style="background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.2);">📊</div>
+          <h3>Session Analytics</h3>
+          <p>Track complete user journeys from first visit to conversion. Understand dropout points and optimize your funnel.</p>
+          <span class="card-tag" style="background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.2);color:#d8b4fe;">Sessions</span>
+        </div>
+        <div class="card" id="card-heatmaps">
+          <div class="card-icon" style="background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.2);">🔥</div>
+          <h3>Click Heatmaps</h3>
+          <p>Visualize where users click most with density heatmaps. Identify your most engaging page regions instantly.</p>
+          <span class="card-tag" style="background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.2);color:#fda4af;">Heatmaps</span>
+        </div>
+        <div class="card" id="card-events">
+          <div class="card-icon" style="background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.2);">⚡</div>
+          <h3>Real-Time Events</h3>
+          <p>Watch events arrive in real time on the dashboard. Less than 100ms latency from click to database record.</p>
+          <span class="card-tag" style="background:rgba(34,211,238,0.1);border:1px solid rgba(34,211,238,0.2);color:#67e8f9;">Real-Time</span>
+        </div>
+        <div class="card" id="card-journey">
+          <div class="card-icon" style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.2);">🗺</div>
+          <h3>Journey Mapping</h3>
+          <p>Follow individual user paths from page to page. See exactly which actions led to conversion or abandonment.</p>
+          <span class="card-tag" style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);color:#6ee7b7;">Journeys</span>
+        </div>
+        <div class="card" id="card-api">
+          <div class="card-icon" style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.2);">🔗</div>
+          <h3>Simple Integration</h3>
+          <p>One script tag. Zero configuration. Works on any website. Our tracker is under 4KB minified and gzipped.</p>
+          <span class="card-tag" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);color:#fcd34d;">Integration</span>
+        </div>
+        <div class="card" id="card-privacy">
+          <div class="card-icon" style="background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.2);">🔒</div>
+          <h3>Privacy-First Design</h3>
+          <p>No PII collected. No third-party dependencies. Self-hosted on your own infrastructure with full data ownership.</p>
+          <span class="card-tag" style="background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.2);color:#d8b4fe;">Privacy</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── TRACKER STATUS ── -->
+    <div class="tracker-panel">
+      <div class="tracker-header">
+        <div class="tracker-title">
+          <span>🟢</span> Tracker Console
+        </div>
+        <button class="btn btn-secondary" id="clear-btn" style="padding:5px 12px;font-size:0.75rem;border-radius:8px;">Clear</button>
+      </div>
+      <div class="console-box" id="console-log">
+[System] CausalFunnel Aurora tracker loaded.<br>
+[System] Waiting for events...<br>
+      </div>
+      <div class="session-id-display">
+        <div class="session-id-label">Current Session ID</div>
+        <div class="session-id-value" id="session-id-val">Loading...</div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    &copy; 2026 CausalFunnel Inc. · Aurora Analytics Platform · All events tracked in real time.
+  </footer>
+
+  <!-- CausalFunnel Tracker Script -->
+  <script src="tracker.js" data-api-url="http://localhost:5500"></script>
+
+  <script>
+    // ── Page content switching based on ?page= query param ──
+    const params      = new URLSearchParams(window.location.search);
+    const currentPage = params.get('page') || 'home';
+
+    // Set active nav link
+    document.querySelectorAll('#main-nav a').forEach(a => {
+      const linkPage = new URLSearchParams(new URL(a.href).search).get('page') || 'home';
+      if (linkPage === currentPage) a.classList.add('active');
+    });
+
+    // Page-specific copy
+    const pageConfigs = {
+      home: {
+        label: 'Features',
+        title: 'Analytics That Understand<br>Your Users',
+        desc: 'This demo website has the CausalFunnel tracker embedded. Every click and page view is sent to the backend in real time.',
+        sectionTitle: 'Everything You Need to Track',
+        sectionSub: 'Click any card below to generate click events visible in the heatmap and session timeline.',
+        heroLayout: false,
+        gridClass: '',
+        sectionMarkup: 'cards',
+      },
+      products: {
+        label: 'Products',
+        title: 'Discover Our Analytics Suite',
+        desc: 'Browse our high-performance analytics tools built for modern e-commerce. Each click here is recorded by the tracker.',
+        sectionTitle: 'Product Features',
+        sectionSub: 'Explore our complete range of analytics capabilities designed for data-driven teams.',
+        heroLayout: false,
+        gridClass: 'products-grid',
+        sectionMarkup: 'products',
+      },
+    };
+    const config = pageConfigs[currentPage] || pageConfigs.home;
+    document.getElementById('hero-chip').textContent = `⚡ ${config.label} Page`;
+    document.getElementById('page-title').innerHTML = config.title;
+    document.getElementById('page-desc').textContent = config.desc;
+    document.getElementById('section-title').textContent = config.sectionTitle;
+    document.getElementById('section-sub').textContent = config.sectionSub;
+    document.getElementById('hero-section').classList.toggle('hero-layout', config.heroLayout);
+    document.getElementById('content-grid').className = `cards-grid ${config.gridClass}`.trim();
+
+    const sectionMarkup = {
+      products: `
+        <article class="card product-card" id="card-sessions">
+          <div>
+            <div class="product-kicker">Session intelligence</div>
+            <div class="card-icon" style="background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.2);margin-bottom:1rem;">📊</div>
+            <h3>Session Analytics</h3>
+            <p>Understand user journeys, entry paths, and conversion points with a dashboard built for decision making.</p>
+          </div>
+          <div class="product-metric"><strong>24/7</strong><span>live tracking</span></div>
+        </article>
+        <article class="card product-card" id="card-heatmaps">
+          <div>
+            <div class="product-kicker">Attention mapping</div>
+            <div class="card-icon" style="background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.2);margin-bottom:1rem;">🔥</div>
+            <h3>Click Heatmaps</h3>
+            <p>See where users focus attention and identify the interface zones that drive engagement.</p>
+          </div>
+          <div class="product-metric"><strong>1-click</strong><span>visual insight</span></div>
+        </article>
+        <article class="card product-card" id="card-events">
+          <div>
+            <div class="product-kicker">Streaming data</div>
+            <div class="card-icon" style="background:rgba(34,211,238,0.12);border:1px solid rgba(34,211,238,0.2);margin-bottom:1rem;">⚡</div>
+            <h3>Real-Time Events</h3>
+            <p>Watch interactions flow into the backend and appear instantly in your analytics workspace.</p>
+          </div>
+          <div class="product-metric"><strong>&lt;100ms</strong><span>record latency</span></div>
+        </article>
+      `,
+    };
+
+    if (sectionMarkup[config.sectionMarkup]) {
+      document.getElementById('content-grid').innerHTML = sectionMarkup[config.sectionMarkup];
+    }
+
+    // ── Console logger ──
+    const consoleEl = document.getElementById('console-log');
+    function log(msg, type = 'info') {
+      const time   = new Date().toLocaleTimeString();
+      const colors = { info: '#6ee7b7', click: '#67e8f9', warn: '#fcd34d' };
+      const color  = colors[type] || '#6ee7b7';
+      consoleEl.innerHTML += `<span style="color:${color}">[${time}] ${msg}</span><br>`;
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    // ── Session ID display ──
+    setTimeout(() => {
+      const sid = localStorage.getItem('cf_session_id');
+      document.getElementById('session-id-val').textContent = sid || 'N/A — localStorage may be blocked';
+    }, 200);
+
+    // ── Click ripple effect ──
+    document.addEventListener('click', e => {
+      const ripple = document.createElement('div');
+      ripple.className = 'click-ripple';
+      ripple.style.cssText = `
+        left:${e.clientX}px; top:${e.clientY}px;
+        width:48px; height:48px;
+        background: radial-gradient(circle, rgba(168,85,247,0.6) 0%, rgba(34,211,238,0.2) 60%, transparent 100%);
+        border: 1.5px solid rgba(168,85,247,0.5);
+      `;
+      document.body.appendChild(ripple);
+      log(`Click → X:${Math.round(e.pageX)}, Y:${Math.round(e.pageY)}`, 'click');
+      setTimeout(() => ripple.remove(), 650);
+    });
+
+    // ── Simulate random clicks ──
+    document.getElementById('random-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      log('Simulating 10 random click events...', 'warn');
+      let count = 0;
+      const interval = setInterval(() => {
+        const x = Math.round(100 + Math.random() * (window.innerWidth - 200));
+        const y = Math.round(100 + Math.random() * (document.documentElement.scrollHeight - 200));
+        // Dispatch a real click event at (x, y) so the tracker captures it
+        const el = document.elementFromPoint(x - window.scrollX, y - window.scrollY);
+        if (el) {
+          const evt = new MouseEvent('click', { bubbles: true, clientX: x, clientY: y, pageX: x, pageY: y });
+          el.dispatchEvent(evt);
+        }
+        count++;
+        if (count >= 10) clearInterval(interval);
+      }, 180);
+    });
+
+    // ── CTA button ──
+    document.getElementById('cta-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      log('CTA button clicked — event tracked!', 'info');
+      // Create a short visual feedback
+      e.target.textContent = 'Event Sent! ✓';
+      e.target.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+      setTimeout(() => {
+        e.target.textContent = 'Generate Events →';
+        e.target.style.background = 'linear-gradient(135deg,#a855f7,#7c3aed)';
+      }, 1500);
+    });
+
+    // ── Clear console ──
+    document.getElementById('clear-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      consoleEl.innerHTML = '<span style="color:#6ee7b7">[System] Console cleared.<br></span>';
+    });
+
+    // ── Card clicks ──
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', e => {
+        log(`Card clicked: "${card.querySelector('h3').textContent}"`, 'info');
+      });
+    });
+
+    log(`Page "${currentPage}" loaded — page_view event sent.`, 'info');
+  </script>
+</body>
+</html>
